@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using UrunSatisSitesi.Entities;
 using UrunSatisSitesi.Service.Repositories;
+using UrunSatisSitesi.WebUI.Utils;
 
 namespace UrunSatisSitesi.WebUI.Areas.Admin.Controllers
 {
@@ -37,52 +38,73 @@ namespace UrunSatisSitesi.WebUI.Areas.Admin.Controllers
         // POST: BrandsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Create(Brand brand, IFormFile? Logo)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    if(Logo is not null) brand.Logo = await FileHelper.FileLoaderAsync(Logo);
+                    await _repository.AddAsync(brand);
+                    await _repository.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch
+                {
+                    ModelState.AddModelError("", "Hata Oluştu!");
+                }
             }
-            catch
-            {
-                return View();
-            }
+            return View(brand);
         }
 
         // GET: BrandsController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> EditAsync(int id)
         {
-            return View();
+            var kayit = await _repository.FindAsync(id);
+
+            if (kayit == null) return NotFound();
+
+            return View(kayit);
         }
 
         // POST: BrandsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Edit(int id, Brand brand, IFormFile? Logo)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    if (Logo is not null) brand.Logo = await FileHelper.FileLoaderAsync(Logo);
+                    _repository.Update(brand);
+                    await _repository.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch
+                {
+                    ModelState.AddModelError("", "Hata Oluştu!");
+                }
             }
-            catch
-            {
-                return View();
-            }
+            return View(brand);
         }
 
         // GET: BrandsController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> DeleteAsync(int id)
         {
-            return View();
+            var kayit = await _repository.FindAsync(id);
+            if (kayit == null) return NotFound();
+            return View(kayit);
         }
 
         // POST: BrandsController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id,Brand brand)
         {
             try
             {
+                _repository.Delete(brand);
                 return RedirectToAction(nameof(Index));
             }
             catch
