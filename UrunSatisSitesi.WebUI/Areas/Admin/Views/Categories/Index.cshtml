@@ -9,17 +9,19 @@
 <p>
     <a asp-action="Create">Yeni Kategori Ekle</a>
 </p>
-<table class="table">
+
+<table class="table table-hover  table-striped">
     <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
+                @Html.DisplayNameFor(model => model.CreateDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Image)
+                <img src="/Img/ @Html.DisplayNameFor(model => model.Image)" alt ="" height = "50"/>
+               
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.IsActive)
@@ -43,7 +45,7 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Description)
+                @Html.DisplayFor(modelItem => item.CreateDate)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Image)
